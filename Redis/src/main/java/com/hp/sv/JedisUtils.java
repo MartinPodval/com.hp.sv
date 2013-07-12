@@ -1,15 +1,19 @@
 package com.hp.sv;
 
-/**
- * Created with IntelliJ IDEA.
- * User: martin
- * Date: 7/12/13
- * Time: 10:37 AM
- * To change this template use File | Settings | File Templates.
- */
+import org.apache.logging.log4j.LogManager;
+import redis.clients.jedis.Jedis;
+
 public class JedisUtils {
 
+    org.apache.logging.log4j.Logger logger = LogManager.getLogger(JedisUtils.class.getName());
+
     public void TestWriteAndRead() {
-        new Jed
+        Jedis connection = new Jedis("localhost");
+
+        connection.set("key", "value");
+        String value = connection.get("key");
+        logger.info(value);
+
+        connection.quit();
     }
 }
