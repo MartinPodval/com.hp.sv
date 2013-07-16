@@ -10,16 +10,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-public class JedisUtils {
-    private static org.apache.logging.log4j.Logger logger = LogManager.getLogger(JedisUtils.class.getName());
-    private static String incrementName = "myIncrement";
-    private static String collectionName = "myList";
+public class TrackPositionPoC {
+    private static org.apache.logging.log4j.Logger logger = LogManager.getLogger(TrackPositionPoC.class.getName());
     private static String vsCounter = "vsCnt";
     private static String vsPrefix = "vs";
     private static String tpList = "tpList";
     private final Repository repository;
 
-    public JedisUtils(String connectionString) {
+    public TrackPositionPoC(String connectionString) {
         repository = new Repository(connectionString);
     }
 
@@ -28,9 +26,10 @@ public class JedisUtils {
     }
 
     public void TestWriteAndRead() {
-        final int vsCount = 10000;
+        final int vsCount = 100;
         final int trackPositionsCount = 100;
-        final int readCount = 10;
+        final int readVsCount = 10;
+        final int readTpCount = 8;
 
         repository.ClearAll();
 
@@ -47,15 +46,15 @@ public class JedisUtils {
         stopWatch.reset();
         stopWatch.start();
 
-        for (int i = 0; i < readCount; i++) {
+        for (int i = 0; i < readVsCount; i++) {
             for (Long vsId : vsIds) {
-                GetListItems(vsId);
+                GetListItems(vsId, readTpCount);
             }
         }
 
         stopWatch.stop();
         logger.debug("Total time [ms]: " + stopWatch.getTime());
-        logger.debug("Cycle were repeated {} times, {} virtual services, {} track positions.", readCount, vsCount, trackPositionsCount);
+        logger.debug("Cycle was repeated {} times, {} virtual services, {}/{} (read/write) track positions.", readVsCount, vsCount, readTpCount, trackPositionsCount);
     }
 
     private List<Long> CreateList(int vsCount, int trackPositionsCount) {
@@ -80,10 +79,10 @@ public class JedisUtils {
         return vsIds;
     }
 
-    private void GetListItems(long vsId) {
+    private void GetListItems(long vsId, int count) {
         String listName = vsPrefix + vsId + tpList;
-        long[] tpIds = repository.GetList(listName, 1, 1);
-        Validate.isTrue(tpIds.length == 1);
+        long[] tpIds = repository.GetList(listName, 1, count);
+        Validate.isTrue(tpIds.length == count);
 
         for (long tpId : tpIds) {
             TrackPosition position = repository.GetPosition(tpId);

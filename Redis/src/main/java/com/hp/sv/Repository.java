@@ -5,6 +5,7 @@ import org.apache.commons.lang3.Validate;
 import redis.clients.jedis.Jedis;
 
 import java.util.List;
+import java.util.Set;
 
 public class Repository {
     private final String trackPositionPrefix = "tp";
@@ -63,6 +64,17 @@ public class Repository {
         long trackId = Long.parseLong(connection.get(trackPositionPrefix + positionId + trackSuffix));
         int cost = Integer.parseInt(connection.get(trackPositionPrefix + positionId + costSuffix));
         return new TrackPosition(positionId, trackId, cost);
+    }
+
+    public void AddToSet(String setName, double score, String value) {
+        Validate.notEmpty(setName);
+        Validate.notEmpty(value);
+
+        connection.zadd(setName, score, value);
+    }
+
+    public Set<String> GetFromSet(String setName, long start, long end) {
+        return connection.zrevrange(setName, start, end);
     }
 
     public Long SizeOfList(String listName) {

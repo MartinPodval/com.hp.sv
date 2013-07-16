@@ -9,9 +9,13 @@ public class RedisPoC {
         String connectionString = GetRedisConnectionString(args);
         logger.info("Using \"{}\" as connection string.", connectionString);
 
-        JedisUtils jedisUtils = new JedisUtils(connectionString);
-        jedisUtils.TestWriteAndRead();
-        jedisUtils.Dispose();
+        /*TrackPositionPoC trackPositionPoC = new TrackPositionPoC(connectionString);
+        trackPositionPoC.TestWriteAndRead();
+        trackPositionPoC.Dispose();*/
+
+        SortedSetPoC sortedSetPoC = new SortedSetPoC(connectionString);
+        sortedSetPoC.Test();
+        sortedSetPoC.Dispose();
     }
 
     private static String GetRedisConnectionString(String[] args) {
