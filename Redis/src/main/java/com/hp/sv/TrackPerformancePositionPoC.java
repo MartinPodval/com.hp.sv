@@ -10,14 +10,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-public class TrackPositionPoC {
-    private static org.apache.logging.log4j.Logger logger = LogManager.getLogger(TrackPositionPoC.class.getName());
+public class TrackPerformancePositionPoC {
+    private static org.apache.logging.log4j.Logger logger = LogManager.getLogger(TrackPerformancePositionPoC.class.getName());
     private static String vsCounter = "vsCnt";
     private static String vsPrefix = "vs";
     private static String tpList = "tpList";
     private final Repository repository;
 
-    public TrackPositionPoC(String connectionString) {
+    public TrackPerformancePositionPoC(String connectionString) {
         repository = new Repository(connectionString);
     }
 

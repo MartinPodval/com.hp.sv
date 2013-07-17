@@ -9,7 +9,7 @@ public class RedisPoC {
         String connectionString = GetRedisConnectionString(args);
         logger.info("Using \"{}\" as connection string.", connectionString);
 
-        /*TrackPositionPoC trackPositionPoC = new TrackPositionPoC(connectionString);
+        /*TrackPerformancePositionPoC trackPositionPoC = new TrackPerformancePositionPoC(connectionString);
         trackPositionPoC.TestWriteAndRead();
         trackPositionPoC.Dispose();*/
 
