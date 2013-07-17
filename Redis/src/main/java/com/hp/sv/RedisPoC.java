@@ -13,8 +13,12 @@ public class RedisPoC {
         trackPositionPoC.TestWriteAndRead();
         trackPositionPoC.Dispose();*/
 
-        SortedSetPoC sortedSetPoC = new SortedSetPoC(connectionString);
+        /*SortedSetPoC sortedSetPoC = new SortedSetPoC(connectionString);
         sortedSetPoC.Test();
+        sortedSetPoC.Dispose();*/
+
+        StatefulSimulationPoC sortedSetPoC = new StatefulSimulationPoC(connectionString);
+        sortedSetPoC.TestStatefulSimulation();
         sortedSetPoC.Dispose();
     }
 

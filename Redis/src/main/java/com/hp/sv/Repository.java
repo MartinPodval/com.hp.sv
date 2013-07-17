@@ -66,6 +66,17 @@ public class Repository {
         return new TrackPosition(positionId, trackId, cost);
     }
 
+    public void Remove(String key) {
+        Validate.notEmpty(key);
+        Validate.isTrue(connection.del(key) == 1);
+    }
+
+    public void RemovePosition(long id) {
+        Validate.isTrue(id >= 0);
+        Long numberOfRemovedKeys = connection.del(trackPositionPrefix + id + trackSuffix, trackPositionPrefix + id + costSuffix);
+        Validate.isTrue(numberOfRemovedKeys == 2);
+    }
+
     public void AddToSet(String setName, double score, String value) {
         Validate.notEmpty(setName);
         Validate.notEmpty(value);
@@ -75,6 +86,11 @@ public class Repository {
 
     public Set<String> GetFromSet(String setName, long start, long end) {
         return connection.zrevrange(setName, start, end);
+    }
+
+    public void RemoveSet(String setName) {
+        Validate.notEmpty(setName);
+        connection.del(setName);
     }
 
     public Long SizeOfList(String listName) {
