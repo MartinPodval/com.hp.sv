@@ -8,6 +8,8 @@ import java.util.Random;
 
 public class StatefulSimulationPoC {
     private static org.apache.logging.log4j.Logger logger = LogManager.getLogger(StatefulSimulationPoC.class.getName());
+
+    public static final String counter = "cnt";
     private final String virtualServicePrefix = "vs";
     private final String trackPositionsListSuffix = "tp";
     private final Repository repository;
@@ -23,10 +25,9 @@ public class StatefulSimulationPoC {
     public void TestStatefulSimulation() {
         final int useCasesCount = 10000;
         final int positions = 8;
-        final int vsId = 1;
-        String vsListName = virtualServicePrefix + ":" + vsId + ":" + trackPositionsListSuffix;
 
-        repository.ClearAll();
+        String vsCnt = virtualServicePrefix + ":" + counter;
+        String vsListName = virtualServicePrefix + ":" + repository.Inc(vsCnt) + ":" + trackPositionsListSuffix;
 
         StopWatch stopWatch = new StopWatch();
         StopWatch readWatch = new StopWatch();
@@ -44,6 +45,7 @@ public class StatefulSimulationPoC {
                     repository.RemovePosition(id);
                 }
                 repository.Remove(vsListName);
+                logger.debug("{} track positions removed.", ids.length);
             }
 
             // Add new back
@@ -62,8 +64,9 @@ public class StatefulSimulationPoC {
         Random random = new Random();
 
         for (int i = 0; i < positionsCount; i++) {
-            repository.AddPosition(new TrackPosition(i, 1, random.nextInt()));
-            positionIds[i] = i;
+            long id = repository.Inc(virtualServicePrefix + ":" + counter);
+            repository.AddPosition(new TrackPosition(id, 1, random.nextInt()));
+            positionIds[i] = id;
         }
 
         repository.AddToList(vsList, positionIds);
