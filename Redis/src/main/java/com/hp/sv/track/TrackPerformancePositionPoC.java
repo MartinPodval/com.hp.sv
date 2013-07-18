@@ -1,6 +1,7 @@
-package com.hp.sv;
+package com.hp.sv.track;
 
-import com.hp.sv.model.TrackPosition;
+import com.hp.sv.Repository;
+import com.hp.sv.track.model.TrackPosition;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.logging.log4j.LogManager;

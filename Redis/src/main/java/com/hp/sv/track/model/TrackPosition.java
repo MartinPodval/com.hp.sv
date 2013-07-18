@@ -1,4 +1,4 @@
-package com.hp.sv.model;
+package com.hp.sv.track.model;
 
 public class TrackPosition {
     public long id;

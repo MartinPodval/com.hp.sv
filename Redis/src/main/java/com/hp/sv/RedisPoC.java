@@ -1,5 +1,7 @@
 package com.hp.sv;
 
+import com.hp.sv.dataset.ServiceCallCachingPoC;
+import com.hp.sv.track.StatefulSimulationPoC;
 import org.apache.commons.cli.*;
 import org.apache.logging.log4j.LogManager;
 
@@ -41,7 +43,10 @@ public class RedisPoC {
         sortedSetPoC.Test();
         sortedSetPoC.Dispose();*/
 
-        RunStatefulSimulationPoC(redisHost, threads);
+        //RunStatefulSimulationPoC(redisHost, threads);
+        ServiceCallCachingPoC serviceCallCachingPoC = new ServiceCallCachingPoC(redisHost);
+        serviceCallCachingPoC.Test();
+        serviceCallCachingPoC.Dispose();
     }
 
     private static void RunStatefulSimulationPoC(final String connectionString, int clients) {
