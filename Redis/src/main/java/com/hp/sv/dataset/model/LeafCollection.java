@@ -4,6 +4,7 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.KryoSerializable;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
+import org.apache.commons.lang3.Validate;
 
 import java.io.Externalizable;
 import java.io.IOException;
@@ -20,6 +21,7 @@ public class LeafCollection implements Externalizable, KryoSerializable {
     }
 
     public LeafCollection(Collection<Leaf> leaves) {
+        Validate.notNull(leaves);
         this.leaves = new ArrayList<>(leaves);
     }
 
