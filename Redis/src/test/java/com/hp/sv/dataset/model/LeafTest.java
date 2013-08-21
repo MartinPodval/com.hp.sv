@@ -14,7 +14,7 @@ public class LeafTest {
         new Leaf(1L, null, "");
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void ctor_value() throws Exception {
         new Leaf(1L, Leaf.Type.Second, "");
     }
