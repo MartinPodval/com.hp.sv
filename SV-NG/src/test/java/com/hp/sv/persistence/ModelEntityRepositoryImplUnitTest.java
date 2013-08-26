@@ -11,7 +11,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 @RunWith(JUnit4.class)
-public class ModelEntityRepositoryImplTest {
+public class ModelEntityRepositoryImplUnitTest {
 
     protected ModelEntityRepository repository;
 
