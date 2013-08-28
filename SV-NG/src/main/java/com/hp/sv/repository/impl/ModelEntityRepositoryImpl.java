@@ -1,7 +1,7 @@
-package com.hp.sv.persistence.impl;
+package com.hp.sv.repository.impl;
 
 import com.hp.sv.model.api.ModelEntity;
-import com.hp.sv.persistence.api.ModelEntityRepository;
+import com.hp.sv.repository.api.ModelEntityRepository;
 import org.apache.commons.lang3.Validate;
 
 public class ModelEntityRepositoryImpl implements ModelEntityRepository {

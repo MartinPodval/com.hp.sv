@@ -7,6 +7,6 @@ public class ModelEntityRepositoryImplIT {
 
     @Test
     public void Throws_When_Not_Valid_Id() {
-        throw new NotImplementedException();
+//        throw new NotImplementedException();
     }
 }

@@ -1,4 +1,4 @@
-package com.hp.sv.persistence.api;
+package com.hp.sv.repository.api;
 
 import com.hp.sv.model.api.ModelEntity;
 

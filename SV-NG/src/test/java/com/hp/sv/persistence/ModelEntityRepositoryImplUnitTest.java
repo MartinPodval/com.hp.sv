@@ -1,8 +1,7 @@
 package com.hp.sv.persistence;
 
-import com.hp.sv.model.api.ModelEntity;
-import com.hp.sv.persistence.api.ModelEntityRepository;
-import com.hp.sv.persistence.impl.ModelEntityRepositoryImpl;
+import com.hp.sv.repository.api.ModelEntityRepository;
+import com.hp.sv.repository.impl.ModelEntityRepositoryImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
