@@ -1,4 +1,4 @@
-package com.hp.sv.simulator.simple.test.repository;
+package com.hp.sv.simulator.simple.test.integration.repository;
 
 import com.hp.sv.simulator.api.repository.SimulatorRepository;
 import org.junit.Test;
