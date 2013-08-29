@@ -1,4 +1,4 @@
-package com.hp.sv.simulator.test.model;
+package com.hp.sv.simulator.simple.test.model;
 
 import com.hp.sv.simulator.simple.model.DatasetImpl;
 import org.junit.Test;
