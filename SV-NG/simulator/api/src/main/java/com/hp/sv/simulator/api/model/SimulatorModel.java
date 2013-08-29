@@ -1,6 +1,6 @@
 package com.hp.sv.simulator.api.model;
 
-public interface Dataset {
+public interface SimulatorModel {
     public int GetId();
     public void SetId(int id);
 }

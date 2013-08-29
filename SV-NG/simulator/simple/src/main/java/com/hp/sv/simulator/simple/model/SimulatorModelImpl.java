@@ -1,13 +1,13 @@
 package com.hp.sv.simulator.simple.model;
 
-import com.hp.sv.simulator.api.model.Dataset;
+import com.hp.sv.simulator.api.model.SimulatorModel;
 import org.apache.commons.lang3.Validate;
 
-public class DatasetImpl implements Dataset {
+public class SimulatorModelImpl implements SimulatorModel {
 
     private int id;
 
-    public DatasetImpl(int id) {
+    public SimulatorModelImpl(int id) {
         Validate.isTrue(id > 0);
         this.id = id;
     }

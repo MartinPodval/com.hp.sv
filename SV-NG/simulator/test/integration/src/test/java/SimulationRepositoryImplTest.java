@@ -1,7 +1,6 @@
-import com.hp.sv.simulator.api.repository.SimulationRepository;
+import com.hp.sv.simulator.api.repository.SimulatorRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -15,7 +14,7 @@ import static org.hamcrest.Matchers.*;
 public class SimulationRepositoryImplTest {
 
     @Autowired
-    protected SimulationRepository simulationRepository;
+    protected SimulatorRepository simulationRepository;
 
     @Test
     public void GetById_Return_Found_Entity() {
