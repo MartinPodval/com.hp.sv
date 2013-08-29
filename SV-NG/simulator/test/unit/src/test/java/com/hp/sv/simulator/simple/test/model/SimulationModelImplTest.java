@@ -6,7 +6,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 @RunWith(JUnit4.class)
-public class DatasetImplTest {
+public class SimulationModelImplTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void Ctor_0_Id_Throws() {

@@ -12,5 +12,6 @@
     <modules>
         <module>simulator</module>
         <module>runtime/reports/api</module>
+        <module>runtime/reports/inmemory</module>
     </modules>
 </project>

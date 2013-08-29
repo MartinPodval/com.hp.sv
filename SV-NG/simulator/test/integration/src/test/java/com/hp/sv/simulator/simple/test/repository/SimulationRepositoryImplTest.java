@@ -1,3 +1,5 @@
+package com.hp.sv.simulator.simple.test.repository;
+
 import com.hp.sv.simulator.api.repository.SimulatorRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
