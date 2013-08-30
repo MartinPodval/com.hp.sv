@@ -1,13 +1,13 @@
-package com.hp.sv.runtime.reports.inmemory;
+package com.hp.sv.runtime.reports.inmemory.rest.service;
 
-import com.hp.sv.runtime.reports.api.RuntimeReportsService;
+import com.hp.sv.runtime.reports.api.RuntimeReportsClient;
 import org.apache.commons.lang3.Validate;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class RuntimeReportServiceImpl implements RuntimeReportsService {
+public class RuntimeReportServiceImpl implements RuntimeReportsClient {
 
     private ConcurrentMap<Integer, AtomicInteger> map = new ConcurrentHashMap<Integer, AtomicInteger>();
 

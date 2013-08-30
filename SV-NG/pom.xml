@@ -12,7 +12,8 @@
     <modules>
         <module>simulator</module>
         <module>runtime/reports/api</module>
-        <module>runtime/reports/inmemory</module>
+        <module>runtime/reports/inmemory/rest/client</module>
+        <module>runtime/reports/inmemory/rest/service</module>
     </modules>
 
 </project>

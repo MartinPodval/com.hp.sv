@@ -1,6 +1,6 @@
 package com.hp.sv.simulator.simple.test.integration.simulator;
 
-import com.hp.sv.runtime.reports.api.RuntimeReportsService;
+import com.hp.sv.runtime.reports.api.RuntimeReportsClient;
 import com.hp.sv.simulator.api.simulator.Simulator;
 import org.junit.After;
 import org.junit.Before;
@@ -22,18 +22,18 @@ public class SimulatorImplTest {
     protected Simulator simulator;
 
     @Autowired
-    protected RuntimeReportsService runtimeReportsService;
+    protected RuntimeReportsClient runtimeReportsClient;
 
     private int virtualServiceId = 123;
 
     @Before
     public void setUp() throws Exception {
-        runtimeReportsService.registerService(virtualServiceId);
+        runtimeReportsClient.registerService(virtualServiceId);
     }
 
     @After
     public void tearDown() throws Exception {
-        runtimeReportsService.unregisterService(virtualServiceId);
+        runtimeReportsClient.unregisterService(virtualServiceId);
     }
 
     @Test
