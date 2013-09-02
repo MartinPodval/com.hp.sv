@@ -14,8 +14,8 @@ import javax.ws.rs.core.Response;
 @Path("runtime-report")
 public class RuntimeReportRestfulServiceImpl {
     private static final Log logger = LogFactory.getLog(RuntimeReportRestfulServiceImpl.class);
-    public static final String VsId = "vsId";
-    public static final String Count = "count";
+    private static final String VsId = "vsId";
+    private static final String Count = "count";
 
     private RuntimeReportsService service;
 
