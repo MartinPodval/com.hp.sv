@@ -1,13 +1,11 @@
 package com.hp.sv.runtime.reports.inmemory.rest.client;
 
+import org.apache.commons.lang3.Validate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
@@ -36,6 +34,7 @@ public class RuntimeReportsClient implements com.hp.sv.runtime.reports.api.Runti
 
             final JSONObject json = new JSONObject().put(VsId, id).put(Count, 0);
             final ResponseEntity<String> response = restTemplate.postForEntity(serverUrl + "/runtime-report/1", new HttpEntity<String>(json.toString(), headers), String.class);
+            Validate.isTrue(response.getStatusCode() == HttpStatus.OK);
 
             if (logger.isDebugEnabled()) {
                 logger.debug(String.format("POST returned response [%s].", response));
@@ -51,14 +50,15 @@ public class RuntimeReportsClient implements com.hp.sv.runtime.reports.api.Runti
     }
 
     public int getServiceUsageCount(int id) {
-        final ResponseEntity<String> entity = restTemplate.getForEntity(serverUrl + "/runtime-report/{id}", String.class, id);
+        final ResponseEntity<String> response = restTemplate.getForEntity(serverUrl + "/runtime-report/{id}", String.class, id);
+        Validate.isTrue(response.getStatusCode() == HttpStatus.OK);
 
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("Returned response entity for virtual service [Id=%d]: [%s].", id, entity.toString()));
+            logger.debug(String.format("Returned response for virtual service [Id=%d]: [%s].", id, response.toString()));
         }
 
         try {
-            final JSONObject json = new JSONObject(entity.getBody());
+            final JSONObject json = new JSONObject(response.getBody());
             final int count = json.getInt(Count);
             return count;
         } catch (JSONException e) {
