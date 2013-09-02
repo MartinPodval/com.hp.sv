@@ -1,13 +1,15 @@
 package com.hp.sv.runtime.reports.inmemory.rest.service;
 
 import com.hp.sv.runtime.reports.api.RuntimeReportsClient;
+import com.hp.sv.runtime.reports.api.RuntimeReportsService;
 import org.apache.commons.lang3.Validate;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.LogManager;
 
-public class RuntimeReportServiceImpl implements RuntimeReportsClient {
+public class RuntimeReportServiceImpl implements RuntimeReportsService {
 
     private ConcurrentMap<Integer, AtomicInteger> map = new ConcurrentHashMap<Integer, AtomicInteger>();
 
