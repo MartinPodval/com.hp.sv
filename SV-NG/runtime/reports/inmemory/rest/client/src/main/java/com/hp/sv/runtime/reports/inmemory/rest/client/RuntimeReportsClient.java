@@ -4,6 +4,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
@@ -12,7 +15,7 @@ import java.net.URI;
 public class RuntimeReportsClient implements com.hp.sv.runtime.reports.api.RuntimeReportsClient {
     private static final Log logger = LogFactory.getLog(RuntimeReportsClient.class);
 
-    private static final String serverUrl = "http://localhost:8085";
+    private static final String serverUrl = "http://localhost:9998";
     private static final String VsId = "vsId";
     private static final String Count = "count";
 
@@ -23,16 +26,19 @@ public class RuntimeReportsClient implements com.hp.sv.runtime.reports.api.Runti
     }
 
     public void registerService(int id) {
-        if(logger.isDebugEnabled()) {
+        if (logger.isDebugEnabled()) {
             logger.debug(String.format("Registering runtime report for virtual service [Id=%d].", id));
         }
 
         try {
-            final JSONObject json = new JSONObject().put(VsId, id).put(Count, 0);
-            final URI uri = restTemplate.postForLocation(serverUrl + "/runtime-report/{id}", json.toString(), id);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
 
-            if(logger.isDebugEnabled()) {
-                logger.debug(String.format("POST returned url [%s].", uri));
+            final JSONObject json = new JSONObject().put(VsId, id).put(Count, 0);
+            final ResponseEntity<String> response = restTemplate.postForEntity(serverUrl + "/runtime-report/1", new HttpEntity<String>(json.toString(), headers), String.class);
+
+            if (logger.isDebugEnabled()) {
+                logger.debug(String.format("POST returned response [%s].", response));
             }
 
         } catch (JSONException e) {
@@ -47,8 +53,8 @@ public class RuntimeReportsClient implements com.hp.sv.runtime.reports.api.Runti
     public int getServiceUsageCount(int id) {
         final ResponseEntity<String> entity = restTemplate.getForEntity(serverUrl + "/runtime-report/{id}", String.class, id);
 
-        if(logger.isDebugEnabled()) {
-            logger.debug(String.format("Returned response entity for virtual service [Id=%d]: [%d].", id, entity));
+        if (logger.isDebugEnabled()) {
+            logger.debug(String.format("Returned response entity for virtual service [Id=%d]: [%s].", id, entity.toString()));
         }
 
         try {

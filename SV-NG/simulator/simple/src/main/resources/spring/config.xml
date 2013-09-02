@@ -4,7 +4,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <bean class="com.hp.sv.simulator.simple.repository.SimulatorRepositoryImpl"/>
-    <bean class="com.hp.sv.simulator.simple.simulator.SimulatorImpl">
+    <bean name="simpleSimulator" class="com.hp.sv.simulator.simple.simulator.SimulatorImpl">
         <constructor-arg index="0" ref="runtimeReportClient"/>
     </bean>
 
