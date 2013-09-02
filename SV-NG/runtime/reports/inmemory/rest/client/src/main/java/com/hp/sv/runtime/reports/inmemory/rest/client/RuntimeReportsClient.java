@@ -1,6 +1,5 @@
 package com.hp.sv.runtime.reports.inmemory.rest.client;
 
-import com.hp.sv.runtime.reports.api.RuntimeReportsClient;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jettison.json.JSONException;
@@ -10,8 +9,8 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 
-public class RuntimeReportClient implements RuntimeReportsClient {
-    private static final Log logger = LogFactory.getLog(RuntimeReportClient.class);
+public class RuntimeReportsClient implements com.hp.sv.runtime.reports.api.RuntimeReportsClient {
+    private static final Log logger = LogFactory.getLog(RuntimeReportsClient.class);
 
     private static final String serverUrl = "http://localhost:8085";
     private static final String VsId = "vsId";
@@ -19,7 +18,7 @@ public class RuntimeReportClient implements RuntimeReportsClient {
 
     private org.springframework.web.client.RestTemplate restTemplate;
 
-    public RuntimeReportClient(RestTemplate restTemplate) {
+    public RuntimeReportsClient(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
@@ -30,7 +29,7 @@ public class RuntimeReportClient implements RuntimeReportsClient {
 
         try {
             final JSONObject json = new JSONObject().put(VsId, id).put(Count, 0);
-            final URI uri = restTemplate.postForLocation(serverUrl + "/runtime-report/{id}", json, id);
+            final URI uri = restTemplate.postForLocation(serverUrl + "/runtime-report/{id}", json.toString(), id);
 
             if(logger.isDebugEnabled()) {
                 logger.debug(String.format("POST returned url [%s].", uri));
