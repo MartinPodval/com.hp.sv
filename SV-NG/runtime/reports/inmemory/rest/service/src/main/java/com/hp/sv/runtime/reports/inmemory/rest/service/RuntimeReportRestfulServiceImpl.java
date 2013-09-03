@@ -22,6 +22,7 @@ public class RuntimeReportRestfulServiceImpl {
     private RuntimeReportsService service;
 
     public RuntimeReportRestfulServiceImpl() {
+//        logger.error("#######");
     }
 
     public RuntimeReportRestfulServiceImpl(RuntimeReportsService service) {

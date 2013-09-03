@@ -28,9 +28,9 @@ import static org.junit.Assert.fail;
 
 @ContextConfiguration(locations = {"classpath*:/spring/config.xml"})
 @RunWith(SpringJUnit4ClassRunner.class)
-public class SimulatorImplTest extends JerseyTest {
+public class SimulatorImplTestWithJerseyAndGrizzly extends JerseyTest {
 
-    private static final Log logger = LogFactory.getLog(SimulatorImplTest.class);
+    private static final Log logger = LogFactory.getLog(SimulatorImplTestWithJerseyAndGrizzly.class);
 
     @Autowired
     protected Simulator simulator;
