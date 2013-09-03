@@ -4,6 +4,9 @@ import com.hp.sv.runtime.reports.api.RuntimeReportsClient;
 import com.hp.sv.runtime.reports.api.RuntimeReportsClientException;
 import com.hp.sv.runtime.reports.inmemory.rest.service.RuntimeReportRestfulServiceImpl;
 import com.hp.sv.simulator.api.simulator.Simulator;
+import org.apache.commons.lang3.time.StopWatch;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.spring.SpringLifecycleListener;
 import org.glassfish.jersey.server.spring.scope.RequestContextFilter;
@@ -26,6 +29,8 @@ import static org.junit.Assert.fail;
 @ContextConfiguration(locations = {"classpath*:/spring/config.xml"})
 @RunWith(SpringJUnit4ClassRunner.class)
 public class SimulatorImplTest extends JerseyTest {
+
+    private static final Log logger = LogFactory.getLog(SimulatorImplTest.class);
 
     @Autowired
     protected Simulator simulator;
@@ -65,11 +70,15 @@ public class SimulatorImplTest extends JerseyTest {
 
     @Test
     public void getResponse_returns_response() {
-        final int count = 5;
+        final int count = 5000;
 
+        final StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
         for (int i = 0; i < count; i++) {
             assertThat(simulator.getResponse(new Object(), virtualServiceId), is(nullValue()));
         }
+        stopWatch.stop();
+        logger.info(String.format("%d simulation calls took: %d ms.", count, stopWatch.getTime()));
 
         assertThat(runtimeReportsClient.getServiceUsageCount(virtualServiceId), is(equalTo(count)));
     }
