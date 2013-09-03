@@ -64,7 +64,7 @@ public class RuntimeReportRestfulServiceImpl {
             service.increaseServiceUsageCount(id);
             return Response.ok().build();
         } else {
-            return Response.noContent().build();
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
     }
 
@@ -78,9 +78,26 @@ public class RuntimeReportRestfulServiceImpl {
             logger.debug(String.format("Getting runtime report for virtual service [Id=%d]", id));
         }
 
-        int count = service.getServiceUsageCount(id);
-        final JSONObject json = new JSONObject().put(VsId, id).put(Count, count);
+        final Integer count = service.getServiceUsageCount(id);
 
-        return Response.ok(json.toString(), MediaType.APPLICATION_JSON).build();
+        if (count != null) {
+            final JSONObject json = new JSONObject().put(VsId, id).put(Count, count.intValue());
+            return Response.ok(json.toString(), MediaType.APPLICATION_JSON).build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+    }
+
+    @DELETE
+    @Path("/{id}")
+    public Response delete(@PathParam("id") final int id) {
+        Validate.isTrue(id > 0);
+
+        if (logger.isDebugEnabled()) {
+            logger.debug(String.format("Deleting runtime report for virtual service [Id=%d]", id));
+        }
+
+        service.unregisterService(id);
+        return Response.ok().build();
     }
 }

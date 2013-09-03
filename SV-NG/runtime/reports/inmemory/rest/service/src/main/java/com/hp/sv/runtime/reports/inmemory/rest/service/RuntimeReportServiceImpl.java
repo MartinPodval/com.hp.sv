@@ -1,13 +1,11 @@
 package com.hp.sv.runtime.reports.inmemory.rest.service;
 
-import com.hp.sv.runtime.reports.api.RuntimeReportsClient;
 import com.hp.sv.runtime.reports.api.RuntimeReportsService;
 import org.apache.commons.lang3.Validate;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.LogManager;
 
 public class RuntimeReportServiceImpl implements RuntimeReportsService {
 
@@ -25,10 +23,9 @@ public class RuntimeReportServiceImpl implements RuntimeReportsService {
         count.incrementAndGet();
     }
 
-    public int getServiceUsageCount(int id) {
+    public Integer getServiceUsageCount(int id) {
         AtomicInteger count = map.get(id);
-        Validate.notNull(count);
-        return count.get();
+        return count != null ? count.get() : null;
     }
 
     public void unregisterService(int id) {

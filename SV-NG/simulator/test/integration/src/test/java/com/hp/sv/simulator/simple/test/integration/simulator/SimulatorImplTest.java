@@ -19,9 +19,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import javax.ws.rs.core.Application;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.fail;
 
 @ContextConfiguration(locations = {"classpath*:/spring/config.xml"})
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -45,6 +44,11 @@ public class SimulatorImplTest extends JerseyTest {
     @After
     public void tearDown() throws Exception {
         runtimeReportsClient.unregisterService(virtualServiceId);
+        try {
+            runtimeReportsClient.getServiceUsageCount(virtualServiceId);
+            fail();
+        } catch (IllegalArgumentException iae) {
+        }
         super.tearDown();
     }
 
@@ -60,7 +64,12 @@ public class SimulatorImplTest extends JerseyTest {
 
     @Test
     public void getResponse_returns_response() {
-        assertThat(simulator.getResponse(new Object(), virtualServiceId), is(nullValue()));
-        assertThat(runtimeReportsClient.getServiceUsageCount(virtualServiceId), is(equalTo(1)));
+        final int count = 5;
+
+        for (int i = 0; i < count; i++) {
+            assertThat(simulator.getResponse(new Object(), virtualServiceId), is(nullValue()));
+        }
+
+        assertThat(runtimeReportsClient.getServiceUsageCount(virtualServiceId), is(equalTo(count)));
     }
 }

@@ -75,5 +75,10 @@ public class RuntimeReportsClient implements com.hp.sv.runtime.reports.api.Runti
     }
 
     public void unregisterService(int id) {
+        if (logger.isDebugEnabled()) {
+            logger.debug(String.format("Unregistering virtual service [Id=%d].", id));
+        }
+
+        restTemplate.delete(runtimeReportWithIdUrl, id);
     }
 }
