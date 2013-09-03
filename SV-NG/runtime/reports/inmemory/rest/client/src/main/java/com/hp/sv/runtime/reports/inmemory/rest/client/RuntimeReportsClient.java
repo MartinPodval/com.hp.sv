@@ -8,8 +8,6 @@ import org.codehaus.jettison.json.JSONObject;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.URI;
-
 public class RuntimeReportsClient implements com.hp.sv.runtime.reports.api.RuntimeReportsClient {
     private static final Log logger = LogFactory.getLog(RuntimeReportsClient.class);
 
@@ -33,7 +31,7 @@ public class RuntimeReportsClient implements com.hp.sv.runtime.reports.api.Runti
             headers.setContentType(MediaType.APPLICATION_JSON);
 
             final JSONObject json = new JSONObject().put(VsId, id).put(Count, 0);
-            final ResponseEntity<String> response = restTemplate.postForEntity(serverUrl + "/runtime-report/1", new HttpEntity<String>(json.toString(), headers), String.class);
+            final ResponseEntity<String> response = restTemplate.postForEntity(serverUrl + "/runtime-report", new HttpEntity<String>(json.toString(), headers), String.class);
             Validate.isTrue(response.getStatusCode() == HttpStatus.OK);
 
             if (logger.isDebugEnabled()) {

@@ -12,7 +12,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@Path("runtime-report/{id}")
+@Path("/runtime-report")
 public class RuntimeReportRestfulServiceImpl {
     private static final Log logger = LogFactory.getLog(RuntimeReportRestfulServiceImpl.class);
     private static final String VsId = "vsId";
@@ -29,6 +29,7 @@ public class RuntimeReportRestfulServiceImpl {
     }
 
     @POST
+    @Path("/")
     @Produces
     @Consumes(MediaType.APPLICATION_JSON)
     public Response post(final String json) throws JSONException {
@@ -49,6 +50,7 @@ public class RuntimeReportRestfulServiceImpl {
     }
 
     @GET
+    @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response get(@PathParam("id") final int id) throws JSONException {
         Validate.isTrue(id > 0);
