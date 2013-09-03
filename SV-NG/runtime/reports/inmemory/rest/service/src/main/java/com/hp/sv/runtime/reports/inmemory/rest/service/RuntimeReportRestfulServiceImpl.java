@@ -49,6 +49,25 @@ public class RuntimeReportRestfulServiceImpl {
         return Response.ok().build();
     }
 
+    @POST
+    @Path("/{id}")
+    @Consumes
+    @Produces
+    public Response increment(@PathParam("id") final int id, @QueryParam("inc") final String incString) {
+        Validate.isTrue(id > 0);
+
+        if (incString != null) {
+            if (logger.isDebugEnabled()) {
+                logger.debug(String.format("Incrementing runtime report's count for virtual service [Id=%d]", id));
+            }
+
+            service.increaseServiceUsageCount(id);
+            return Response.ok().build();
+        } else {
+            return Response.noContent().build();
+        }
+    }
+
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
