@@ -69,17 +69,30 @@ public class SimulatorImplTest extends JerseyTest {
     }
 
     @Test
-    public void getResponse_returns_response() {
-        final int count = 5000;
+    public void getResponse_returns_response() throws InterruptedException {
+        final int countPerThread = 5000;
+        final int threadsCount = 5;
+        Thread[] threads = new Thread[threadsCount];
+
+        for (int i = 0; i < threadsCount; i++) {
+            threads[i] = new Thread(new Runnable() {
+                public void run() {
+                    for (int j = 0; j < countPerThread; j++) {
+                        assertThat(simulator.getResponse(new Object(), virtualServiceId), is(nullValue()));
+                    }
+                }
+            });
+        }
 
         final StopWatch stopWatch = new StopWatch();
         stopWatch.start();
-        for (int i = 0; i < count; i++) {
-            assertThat(simulator.getResponse(new Object(), virtualServiceId), is(nullValue()));
-        }
-        stopWatch.stop();
-        logger.info(String.format("%d simulation calls took: %d ms.", count, stopWatch.getTime()));
 
-        assertThat(runtimeReportsClient.getServiceUsageCount(virtualServiceId), is(equalTo(count)));
+        for (Thread t : threads) t.start();
+        for (Thread t : threads) t.join();
+
+        stopWatch.stop();
+        logger.info(String.format("%d simulation calls took: %d ms.", countPerThread * threadsCount, stopWatch.getTime()));
+
+        assertThat(runtimeReportsClient.getServiceUsageCount(virtualServiceId), is(equalTo(countPerThread * threadsCount)));
     }
 }
