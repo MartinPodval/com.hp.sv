@@ -28,9 +28,9 @@ import static org.junit.Assert.fail;
 
 @ContextConfiguration(locations = {"classpath*:/spring/config.xml"})
 @RunWith(SpringJUnit4ClassRunner.class)
-public class SimulatorImplTestWithJerseyAndGrizzly extends JerseyTest {
+public class SimulatorImplTestWithJerseyAndEmbeddedGrizzly extends JerseyTest {
 
-    private static final Log logger = LogFactory.getLog(SimulatorImplTestWithJerseyAndGrizzly.class);
+    private static final Log logger = LogFactory.getLog(SimulatorImplTestWithJerseyAndEmbeddedGrizzly.class);
 
     @Autowired
     protected Simulator simulator;
@@ -70,8 +70,8 @@ public class SimulatorImplTestWithJerseyAndGrizzly extends JerseyTest {
 
     @Test
     public void getResponse_returns_response() throws InterruptedException {
-        final int countPerThread = 5000;
-        final int threadsCount = 5;
+        final int countPerThread = 5;
+        final int threadsCount = 1;
         Thread[] threads = new Thread[threadsCount];
 
         for (int i = 0; i < threadsCount; i++) {
