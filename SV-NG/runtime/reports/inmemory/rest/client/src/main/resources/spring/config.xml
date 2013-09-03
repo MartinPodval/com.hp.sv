@@ -3,7 +3,12 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean id="restTemplate" class="org.springframework.web.client.RestTemplate"/>
-    <bean name="runtimeReportClient" id="runtimeReportClient" class="com.hp.sv.runtime.reports.inmemory.rest.client.RuntimeReportsClient" autowire="constructor"/>
+    <bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
+        <property name="errorHandler">
+            <bean class="com.hp.sv.runtime.reports.inmemory.rest.client.RuntimeReportsClientResponseErrorHandler" />
+        </property>
+    </bean>
+    <bean name="runtimeReportClient" id="runtimeReportClient"
+          class="com.hp.sv.runtime.reports.inmemory.rest.client.RuntimeReportsClient" autowire="constructor"/>
 
 </beans>

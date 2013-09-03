@@ -1,6 +1,7 @@
 package com.hp.sv.simulator.simple.test.integration.simulator;
 
 import com.hp.sv.runtime.reports.api.RuntimeReportsClient;
+import com.hp.sv.runtime.reports.api.RuntimeReportsClientException;
 import com.hp.sv.runtime.reports.inmemory.rest.service.RuntimeReportRestfulServiceImpl;
 import com.hp.sv.simulator.api.simulator.Simulator;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -47,7 +48,7 @@ public class SimulatorImplTest extends JerseyTest {
         try {
             runtimeReportsClient.getServiceUsageCount(virtualServiceId);
             fail();
-        } catch (IllegalArgumentException iae) {
+        } catch (RuntimeReportsClientException e) {
         }
         super.tearDown();
     }
