@@ -8,20 +8,26 @@ import org.codehaus.jettison.json.JSONObject;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
+import javax.ws.rs.core.UriBuilder;
+import java.net.URI;
+
 public class RuntimeReportsClient implements com.hp.sv.runtime.reports.api.RuntimeReportsClient {
     private static final Log logger = LogFactory.getLog(RuntimeReportsClient.class);
 
     private static final String VsId = "vsId";
     private static final String Count = "count";
 
-    private final String serverUrl;
+    private final URI serverUri;
     private static final String runtimeReportUrl = "/runtime-report";
     private static final String runtimeReportWithIdUrl = runtimeReportUrl + "/{id}";
     private static final String runtimeReportWithIdUrlAndInc = runtimeReportWithIdUrl + "?inc";
     private final org.springframework.web.client.RestTemplate restTemplate;
 
-    public RuntimeReportsClient(String serverUrl, RestTemplate restTemplate) {
-        this.serverUrl = serverUrl;
+    public RuntimeReportsClient(String serverUri, int serverPort, RestTemplate restTemplate) {
+        Validate.notNull(serverUri);
+        Validate.isTrue(serverPort > 0);
+
+        this.serverUri = UriBuilder.fromUri(serverUri).port(serverPort).build();
         this.restTemplate = restTemplate;
     }
 
@@ -35,7 +41,7 @@ public class RuntimeReportsClient implements com.hp.sv.runtime.reports.api.Runti
             headers.setContentType(MediaType.APPLICATION_JSON);
 
             final JSONObject json = new JSONObject().put(VsId, id).put(Count, 0);
-            final ResponseEntity<String> response = restTemplate.postForEntity(serverUrl + runtimeReportUrl, new HttpEntity<String>(json.toString(), headers), String.class);
+            final ResponseEntity<String> response = restTemplate.postForEntity(serverUri + runtimeReportUrl, new HttpEntity<String>(json.toString(), headers), String.class);
             Validate.isTrue(response.getStatusCode() == HttpStatus.OK);
 
             if (logger.isDebugEnabled()) {
@@ -53,12 +59,12 @@ public class RuntimeReportsClient implements com.hp.sv.runtime.reports.api.Runti
             logger.debug(String.format("Incrementing counter for virtual service [Id=%d].", id));
         }
 
-        final ResponseEntity<String> response = restTemplate.postForEntity(serverUrl + runtimeReportWithIdUrlAndInc, null, String.class, id);
+        final ResponseEntity<String> response = restTemplate.postForEntity(serverUri + runtimeReportWithIdUrlAndInc, null, String.class, id);
         Validate.isTrue(response.getStatusCode() == HttpStatus.OK);
     }
 
     public int getServiceUsageCount(int id) {
-        final ResponseEntity<String> response = restTemplate.getForEntity(serverUrl + runtimeReportWithIdUrl, String.class, id);
+        final ResponseEntity<String> response = restTemplate.getForEntity(serverUri + runtimeReportWithIdUrl, String.class, id);
         Validate.isTrue(response.getStatusCode() == HttpStatus.OK);
 
         if (logger.isDebugEnabled()) {
@@ -80,6 +86,6 @@ public class RuntimeReportsClient implements com.hp.sv.runtime.reports.api.Runti
             logger.debug(String.format("Unregistering virtual service [Id=%d].", id));
         }
 
-        restTemplate.delete(serverUrl + runtimeReportWithIdUrl, id);
+        restTemplate.delete(serverUri + runtimeReportWithIdUrl, id);
     }
 }
