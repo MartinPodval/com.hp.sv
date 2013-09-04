@@ -5,10 +5,12 @@
 
     <bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
         <property name="errorHandler">
-            <bean class="com.hp.sv.runtime.reports.inmemory.rest.client.RuntimeReportsClientResponseErrorHandler" />
+            <bean class="com.hp.sv.runtime.reports.inmemory.rest.client.RuntimeReportsClientResponseErrorHandler"/>
         </property>
     </bean>
     <bean name="runtimeReportClient" id="runtimeReportClient"
-          class="com.hp.sv.runtime.reports.inmemory.rest.client.RuntimeReportsClient" autowire="constructor"/>
+          class="com.hp.sv.runtime.reports.inmemory.rest.client.RuntimeReportsClient" autowire="constructor">
+        <constructor-arg name="serverUrl" value="http://localhost:9998"/>
+    </bean>
 
 </beans>

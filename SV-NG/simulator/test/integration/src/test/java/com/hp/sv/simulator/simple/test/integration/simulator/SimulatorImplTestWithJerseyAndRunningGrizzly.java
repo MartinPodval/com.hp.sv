@@ -20,9 +20,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.fail;
 
-
 @ContextConfiguration(locations = {"classpath*:/spring/config.xml"})
-@RunWith(SpringJUnit4ClassRunner.class)
+//@RunWith(SpringJUnit4ClassRunner.class)
 public class SimulatorImplTestWithJerseyAndRunningGrizzly {
 
     private static final Log logger = LogFactory.getLog(SimulatorImplTestWithJerseyAndRunningGrizzly.class);
@@ -51,7 +50,7 @@ public class SimulatorImplTestWithJerseyAndRunningGrizzly {
         }
     }
 
-    @Test
+//    @Test
     public void getResponse_returns_response() throws InterruptedException {
         final int countPerThread = 5;
         final int threadsCount = 1;
