@@ -22,7 +22,8 @@ public class RuntimeReportRestfulServiceImpl {
     private RuntimeReportsService service;
 
     public RuntimeReportRestfulServiceImpl() {
-//        logger.error("#######");
+        //logger.error("#######: " + this);
+        //bug this constructor is called every request
     }
 
     public RuntimeReportRestfulServiceImpl(RuntimeReportsService service) {
