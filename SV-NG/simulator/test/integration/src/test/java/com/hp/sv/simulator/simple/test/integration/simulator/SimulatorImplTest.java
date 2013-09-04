@@ -21,16 +21,22 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.fail;
 
 /**
- How to run this test as parametrized mvn task?
- <code>
- mvn integration-test -Dtest=SimulatorImplTest WithJerseyAndRunningGrizzly -DargLine="-Dserver.port=12345"
- </code>
-*/
+ * How to run this test as parametrized mvn task?
+ * <code>
+ * mvn integration-test -Dtest=SimulatorImplTest -DargLine="-Dserver.port=12345"
+ * </code>
+ * <p/>
+ * or
+ * <p/>
+ * <code>
+ * mvn integration-test -DargLine="-Dserver.url=http:server -Dserver.port=12345"
+ * </code>
+ */
 @ContextConfiguration(locations = {"classpath*:/spring/config.xml"})
 @RunWith(SpringJUnit4ClassRunner.class)
-public class SimulatorImplTestWithJerseyAndRunningGrizzly {
+public class SimulatorImplTest {
 
-    private static final Log logger = LogFactory.getLog(SimulatorImplTestWithJerseyAndRunningGrizzly.class);
+    private static final Log logger = LogFactory.getLog(SimulatorImplTest.class);
 
     @Autowired
     protected Simulator simulator;
