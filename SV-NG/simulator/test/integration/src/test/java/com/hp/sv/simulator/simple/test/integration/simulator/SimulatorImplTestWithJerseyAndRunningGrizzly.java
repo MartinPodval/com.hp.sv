@@ -58,8 +58,8 @@ public class SimulatorImplTestWithJerseyAndRunningGrizzly {
 
     @Test
     public void getResponse_returns_response() throws InterruptedException {
-        final int countPerThread = 10;
-        final int threadsCount = 5000;
+        final int countPerThread = 5000;
+        final int threadsCount = 10;
         Thread[] threads = new Thread[threadsCount];
 
         for (int i = 0; i < threadsCount; i++) {
