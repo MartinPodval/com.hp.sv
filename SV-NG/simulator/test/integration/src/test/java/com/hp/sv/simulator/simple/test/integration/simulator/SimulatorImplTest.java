@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.Random;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.fail;
@@ -53,7 +55,7 @@ public class SimulatorImplTest {
     protected static int threadsCount = 15;
     protected static int countPerThread = 5000;
 
-    private int virtualServiceId = 123;
+    private int virtualServiceId = Math.abs(new Random().nextInt());
 
     @Before
     public void setUp() throws Exception {
