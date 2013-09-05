@@ -31,6 +31,11 @@ import static org.junit.Assert.fail;
  * <code>
  * mvn integration-test -DargLine="-Dserver.url=http:server -Dserver.port=12345"
  * </code>
+ * <p/>
+ * Run test from command line:
+ * <code>
+  * java "-DthreadsCount=50" "-Dserver.port=12345" "-DcountPerThread=100" -cp ".;.\dependency\*;.\SimpleSimulatorIntegrationTest-1.0-SNAPSHOT-tests.jar" org.junit.runner.JUnitCore com.hp.sv.simulator.simple.test.integration.simulator.SimulatorImplTest
+ * * </code>
  */
 @ContextConfiguration(locations = {"classpath*:/spring/config.xml"})
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -45,11 +50,22 @@ public class SimulatorImplTest {
     @Qualifier("runtimeReportClient")
     protected RuntimeReportsClient runtimeReportsClient;
 
+    protected static int threadsCount = 15;
+    protected static int countPerThread = 5000;
+
     private int virtualServiceId = 123;
 
     @Before
     public void setUp() throws Exception {
         runtimeReportsClient.registerService(virtualServiceId);
+        final String threadsCountString = System.getProperty("threadsCount");
+        if (threadsCountString != null) {
+            threadsCount = Integer.parseInt(threadsCountString);
+        }
+        final String countPerThreadString = System.getProperty("countPerThread");
+        if (countPerThreadString != null) {
+            countPerThread = Integer.parseInt(countPerThreadString);
+        }
     }
 
     @After
@@ -64,8 +80,6 @@ public class SimulatorImplTest {
 
     @Test
     public void getResponse_returns_response() throws InterruptedException {
-        final int countPerThread = 5000;
-        final int threadsCount = 10;
         Thread[] threads = new Thread[threadsCount];
 
         for (int i = 0; i < threadsCount; i++) {
@@ -85,7 +99,7 @@ public class SimulatorImplTest {
         for (Thread t : threads) t.join();
 
         stopWatch.stop();
-        logger.info(String.format("%d simulation calls took: %d ms.", countPerThread * threadsCount, stopWatch.getTime()));
+        logger.info(String.format("%d simulation calls (%d threads) took: %d ms.", countPerThread * threadsCount, threadsCount, stopWatch.getTime()));
 
         assertThat(runtimeReportsClient.getServiceUsageCount(virtualServiceId), is(equalTo(countPerThread * threadsCount)));
     }
