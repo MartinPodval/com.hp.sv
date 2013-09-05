@@ -6,10 +6,14 @@ import org.apache.commons.logging.LogFactory;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.springframework.http.*;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 import javax.ws.rs.core.UriBuilder;
+import java.net.Proxy;
+import java.net.ProxySelector;
 import java.net.URI;
+import java.util.List;
 
 public class RuntimeReportsClient implements com.hp.sv.runtime.reports.api.RuntimeReportsClient {
     private static final Log logger = LogFactory.getLog(RuntimeReportsClient.class);
@@ -29,6 +33,23 @@ public class RuntimeReportsClient implements com.hp.sv.runtime.reports.api.Runti
 
         this.serverUri = UriBuilder.fromUri(serverUri).port(serverPort).build();
         this.restTemplate = restTemplate;
+        setupProxyToRestTemplate(this.serverUri, restTemplate);
+    }
+
+    private static void setupProxyToRestTemplate(URI serverUri, RestTemplate restTemplate) {
+        Validate.notNull(serverUri);
+        Validate.notNull(restTemplate);
+
+        final ProxySelector proxySelector = ProxySelector.getDefault();
+        Validate.notNull(proxySelector);
+
+        final List<Proxy> proxies = proxySelector.select(serverUri);
+        Validate.isTrue(proxies.size() > 0);
+
+        final Proxy proxy = proxies.get(0);
+
+        ((SimpleClientHttpRequestFactory) restTemplate.getRequestFactory()).setProxy(proxy);
+        logger.info(String.format("Setting proxy: %s", proxy));
     }
 
     public void registerService(int id) {
