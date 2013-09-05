@@ -56,6 +56,7 @@ public class SimulatorTestCase implements AutoCloseable {
     }
 
     public void close() throws Exception {
+        runtimeReportsClient.unregisterService(virtualServiceId);
         try {
             runtimeReportsClient.getServiceUsageCount(virtualServiceId);
             fail();
