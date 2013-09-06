@@ -61,8 +61,8 @@ public class Master extends UntypedActor {
         @Override
         public Actor create() throws Exception {
             final Worker worker = context.getBean(Worker.class);
-            if (logger.isDebugEnabled()) {
-                logger.debug(String.format("Producing new worker [%s].", worker));
+            if (logger.isInfoEnabled()) {
+                logger.info(String.format("Producing new worker [%s].", worker));
             }
             return worker;
         }

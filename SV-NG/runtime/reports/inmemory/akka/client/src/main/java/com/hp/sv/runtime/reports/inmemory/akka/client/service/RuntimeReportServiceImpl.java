@@ -29,19 +29,23 @@ public class RuntimeReportServiceImpl implements RuntimeReportsService {
     }
 
     public void increaseServiceUsageCount(int id) {
-        if (logger.isDebugEnabled()) {
-            logger.debug(String.format("Increasing usage count for virtual service [%d]", id));
-        }
+//        if (logger.isDebugEnabled()) {
+//            logger.debug(String.format("Increasing usage count for virtual service [%d]", id));
+//        }
 
-        Validate.isTrue(id > 0);
+//        Validate.isTrue(id > 0);
 //        AtomicInteger count = map.get(id);
         AtomicInteger count = i;
-        Validate.notNull(count);
+//        Validate.notNull(count);
         final int increasedCount = count.incrementAndGet();
 
-        if (logger.isDebugEnabled()) {
-            logger.debug(String.format("Count for virtual service [Id=%d] was increased to [%d].", id, increasedCount));
+        if (increasedCount % 100000 == 0) {
+            logger.info(increasedCount);
         }
+
+//        if (logger.isDebugEnabled()) {
+//            logger.debug(String.format("Count for virtual service [Id=%d] was increased to [%d].", id, increasedCount));
+//        }
     }
 
     public Integer getServiceUsageCount(int id) {
