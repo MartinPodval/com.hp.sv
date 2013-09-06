@@ -3,6 +3,7 @@ package com.hp.sv.runtime.reports.inmemory.akka.client.worker;
 import akka.actor.UntypedActor;
 import com.hp.sv.runtime.reports.api.RuntimeReportsService;
 import com.hp.sv.runtime.reports.inmemory.akka.client.model.*;
+import com.hp.sv.runtime.reports.inmemory.akka.client.service.RuntimeReportServiceImpl;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -12,8 +13,7 @@ public class Worker extends UntypedActor {
 
     private static final Log logger = LogFactory.getLog(Worker.class);
 
-    @Autowired
-    private RuntimeReportsService runtimeReportsService;
+    private static RuntimeReportsService runtimeReportsService = new RuntimeReportServiceImpl();
 
     @Override
     public void onReceive(Object message) throws Exception {
