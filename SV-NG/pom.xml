@@ -14,6 +14,7 @@
         <module>runtime/reports/api</module>
         <module>runtime/reports/inmemory/rest/client</module>
         <module>runtime/reports/inmemory/rest/service</module>
+        <module>runtime/reports/inmemory/akka/client</module>
     </modules>
 
 </project>
