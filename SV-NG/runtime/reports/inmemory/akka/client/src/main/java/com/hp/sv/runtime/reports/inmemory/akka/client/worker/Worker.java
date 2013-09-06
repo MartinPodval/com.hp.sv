@@ -17,7 +17,7 @@ public class Worker extends UntypedActor {
 
     @Override
     public void onReceive(Object message) throws Exception {
-        if(logger.isDebugEnabled()) {
+        if (logger.isDebugEnabled()) {
             logger.debug(String.format("Message received: %s", message));
         }
         Validate.notNull(runtimeReportsService);

@@ -8,6 +8,8 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.concurrent.*;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.fail;
@@ -30,7 +32,7 @@ public class SimulatorTestCase implements AutoCloseable {
         runtimeReportsClient.registerService(virtualServiceId);
     }
 
-    public void execute(final int threadsCount, final int countPerThread) throws InterruptedException {
+    public void execute(final int threadsCount, final int countPerThread) throws Exception {
         Thread[] threads = new Thread[threadsCount];
 
         for (int i = 0; i < threadsCount; i++) {
@@ -49,10 +51,21 @@ public class SimulatorTestCase implements AutoCloseable {
         for (Thread t : threads) t.start();
         for (Thread t : threads) t.join();
 
+        ExecutorService exec = Executors.newSingleThreadExecutor();
+        final Future<Object> future = exec.submit(new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                while (runtimeReportsClient.getServiceUsageCount(virtualServiceId) != countPerThread * threadsCount) {
+                    Thread.sleep(50);
+                }
+                return runtimeReportsClient.getServiceUsageCount(virtualServiceId);
+            }
+        });
+        final int result = (int) future.get(100, TimeUnit.SECONDS);
         stopWatch.stop();
-        logger.info(String.format("%d simulation calls took: %d ms.", countPerThread * threadsCount, stopWatch.getTime()));
 
-        assertThat(runtimeReportsClient.getServiceUsageCount(virtualServiceId), is(equalTo(countPerThread * threadsCount)));
+        logger.info(String.format("%d simulation calls took: %d ms.", countPerThread * threadsCount, stopWatch.getTime()));
+        assertThat(result, is(equalTo(countPerThread * threadsCount)));
     }
 
     public void close() throws Exception {

@@ -28,7 +28,7 @@ public class SimulatorImplTestWithAkka {
     protected RuntimeReportsClient runtimeReportsClient;
 
     protected static int threadsCount = 10;
-    protected static int countPerThread = 5000000;
+    protected static int countPerThread = 500000;
 
     private int virtualServiceId = Math.abs(new Random().nextInt());
 

@@ -1,35 +1,46 @@
 package com.hp.sv.runtime.reports.inmemory.akka.client.client;
 
 import akka.actor.*;
+import akka.pattern.Patterns;
+import akka.util.Timeout;
+import com.hp.sv.runtime.reports.api.RuntimeReportsClientException;
 import com.hp.sv.runtime.reports.inmemory.akka.client.Master;
-import com.hp.sv.runtime.reports.inmemory.akka.client.model.RuntimeReportSelector;
-import com.hp.sv.runtime.reports.inmemory.akka.client.model.VirtualServiceIncrementation;
-import com.hp.sv.runtime.reports.inmemory.akka.client.model.VirtualServiceRegistration;
-import com.hp.sv.runtime.reports.inmemory.akka.client.model.VirtualServiceUnregistration;
+import com.hp.sv.runtime.reports.inmemory.akka.client.model.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import scala.concurrent.Await;
+import scala.concurrent.Future;
+import scala.concurrent.duration.Duration;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import java.util.concurrent.TimeUnit;
 
 public class RuntimeReportsClient implements com.hp.sv.runtime.reports.api.RuntimeReportsClient, ApplicationContextAware {
 
     private static final Log logger = LogFactory.getLog(RuntimeReportsClient.class);
 
+    private ActorSystem actorSystem;
     private ActorRef master;
     private ApplicationContext context;
 
     @PostConstruct
     public void afterDependenciesInitialization() {
-        final ActorSystem actorSystem = ActorSystem.create();
+        actorSystem = ActorSystem.create();
         master = actorSystem.actorOf(new Props(new UntypedActorFactory() {
             @Override
             public Actor create() throws Exception {
                 return new Master(30, context);
             }
         }), "master");
+    }
+
+    @PreDestroy
+    public void preDestroy() {
+        actorSystem.shutdown();
     }
 
     private VirtualServiceRegistration reg;
@@ -60,8 +71,18 @@ public class RuntimeReportsClient implements com.hp.sv.runtime.reports.api.Runti
         if (rrs == null) {
             rrs = new RuntimeReportSelector(id);
         }
-        master.tell(rrs, ActorRef.noSender());
-        return 0;
+        logger.info("Asking for count ...");
+        final Timeout timeout = new Timeout(Duration.create(5, TimeUnit.SECONDS));
+        Future<Object> f = Patterns.ask(master, rrs, timeout);
+
+        try {
+            final Object result = Await.result(f, timeout.duration());
+            final int count = ((RuntimeReport) result).getCount();
+            return count;
+        } catch (Exception e) {
+            logger.error(e);
+            throw new RuntimeReportsClientException(String.format("Can't get service usage count for virtual service [Id=%d].", id), e);
+        }
     }
 
     @Override

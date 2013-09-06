@@ -5,12 +5,22 @@ import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.actor.UntypedActor;
 import akka.japi.Creator;
+import akka.pattern.Patterns;
 import akka.routing.RoundRobinRouter;
+import akka.util.Timeout;
+import com.hp.sv.runtime.reports.api.RuntimeReportsClientException;
+import com.hp.sv.runtime.reports.inmemory.akka.client.model.RuntimeReport;
+import com.hp.sv.runtime.reports.inmemory.akka.client.model.RuntimeReportSelector;
 import com.hp.sv.runtime.reports.inmemory.akka.client.worker.Worker;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.ApplicationContext;
+import scala.concurrent.Await;
+import scala.concurrent.Future;
+import scala.concurrent.duration.Duration;
+
+import java.util.concurrent.TimeUnit;
 
 public class Master extends UntypedActor {
 
@@ -27,9 +37,18 @@ public class Master extends UntypedActor {
         router = getContext().actorOf(Props.create(new WorkerCreator(context)).withRouter(new RoundRobinRouter(workersCount)));
     }
 
+    private ActorRef originalSender;
+
     @Override
     public void onReceive(Object message) throws Exception {
-        router.tell(message, getSelf());
+        if (message instanceof RuntimeReport) {
+            originalSender.forward(message, getContext());
+        } else {
+            if (message instanceof RuntimeReportSelector) {
+                originalSender = getSender();
+            }
+            router.tell(message, getSelf());
+        }
     }
 
     static class WorkerCreator implements Creator<Actor> {
