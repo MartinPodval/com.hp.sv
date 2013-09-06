@@ -60,7 +60,7 @@ public class SimulatorTestCase implements AutoCloseable {
             public Object call() throws Exception {
                 int current = runtimeReportsClient.getServiceUsageCount(virtualServiceId);
                 while ((current != countPerThread * threadsCount) && (current != last)) {
-                    Thread.sleep(100);
+                    Thread.sleep(300);
                     if(logger.isInfoEnabled()) {
                         logger.info("Current count is " + current);
                     }

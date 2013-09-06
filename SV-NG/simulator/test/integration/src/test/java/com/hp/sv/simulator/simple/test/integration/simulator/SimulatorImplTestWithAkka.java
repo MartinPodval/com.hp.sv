@@ -27,8 +27,8 @@ public class SimulatorImplTestWithAkka {
     @Qualifier("akkaRuntimeReportClient")
     protected RuntimeReportsClient runtimeReportsClient;
 
-    protected static int threadsCount = 10;
-    protected static int countPerThread = 500000;
+    protected static int threadsCount = 50;
+    protected static int countPerThread = 5000000;
 
     private int virtualServiceId = Math.abs(new Random().nextInt());
 
