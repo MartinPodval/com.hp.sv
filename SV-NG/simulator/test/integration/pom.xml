@@ -20,20 +20,18 @@
             <version>1.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
-        <!--
-                <dependency>
-                    <groupId>com.hp.sv.runtimeReport</groupId>
-                    <artifactId>InMemoryRestClient</artifactId>
-                    <version>1.0-SNAPSHOT</version>
-                    <scope>test</scope>
-                </dependency>
-                <dependency>
-                    <groupId>com.hp.sv.runtimeReport</groupId>
-                    <artifactId>InMemoryRestService</artifactId>
-                    <version>1.0-SNAPSHOT</version>
-                    <scope>test</scope>
-                </dependency>
-        -->
+        <dependency>
+            <groupId>com.hp.sv.runtimeReport</groupId>
+            <artifactId>InMemoryRestClient</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.hp.sv.runtimeReport</groupId>
+            <artifactId>InMemoryRestService</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-all</artifactId>
@@ -71,11 +69,13 @@
             <version>2.2</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.hp.sv.runtimeReport</groupId>
-            <artifactId>InMemoryAkkaClient</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
+        <!--
+                <dependency>
+                    <groupId>com.hp.sv.runtimeReport</groupId>
+                    <artifactId>InMemoryAkkaClient</artifactId>
+                    <version>1.0-SNAPSHOT</version>
+                </dependency>
+        -->
         <dependency>
             <groupId>org.glassfish.jersey.containers</groupId>
             <artifactId>jersey-container-servlet</artifactId>
@@ -141,7 +141,9 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <argLine>-server -XX:+UseNUMA -XX:+UseCondCardMark -XX:-UseBiasedLocking -Xms1024M -Xmx2048M -Xss1M -XX:MaxPermSize=128m -XX:+UseParallelGC</argLine>
+                    <argLine>-server -XX:+UseNUMA -XX:+UseCondCardMark -XX:-UseBiasedLocking -Xms1024M -Xmx2048M -Xss1M
+                        -XX:MaxPermSize=128m -XX:+UseParallelGC
+                    </argLine>
                     <includes>
                         <include>**/*.java</include>
                     </includes>
