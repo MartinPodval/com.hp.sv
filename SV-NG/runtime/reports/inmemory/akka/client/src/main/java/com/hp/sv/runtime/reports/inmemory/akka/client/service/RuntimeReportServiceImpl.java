@@ -21,6 +21,10 @@ public class RuntimeReportServiceImpl implements RuntimeReportsService {
 
         Validate.isTrue(id > 0);
         Validate.isTrue(map.putIfAbsent(id, new AtomicInteger()) == null, "Service [Id=%d] is already registered.", id);
+        if(logger.isInfoEnabled()) {
+            logger.info(String.format("Registering virtual service is done [%d].", id));
+            logger.info(String.format("Current value is [%d].", map.get(id).intValue()));
+        }
     }
 
     public void increaseServiceUsageCount(int id) {
