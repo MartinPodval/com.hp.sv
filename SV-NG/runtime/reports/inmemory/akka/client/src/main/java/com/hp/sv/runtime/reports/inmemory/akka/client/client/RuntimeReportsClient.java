@@ -27,24 +27,40 @@ public class RuntimeReportsClient implements com.hp.sv.runtime.reports.api.Runti
         master = actorSystem.actorOf(new Props(new UntypedActorFactory() {
             @Override
             public Actor create() throws Exception {
-                return new Master(10, context);
+                return new Master(30, context);
             }
         }), "master");
     }
 
+    private VirtualServiceRegistration reg;
+
     @Override
     public void registerService(int id) {
-        master.tell(new VirtualServiceRegistration(id), ActorRef.noSender());
+        if (reg == null) {
+            reg = new VirtualServiceRegistration(id);
+        }
+
+        master.tell(reg, ActorRef.noSender());
     }
+
+    private VirtualServiceIncrementation inc;
 
     @Override
     public void increaseServiceUsageCount(int id) {
-        master.tell(new VirtualServiceIncrementation(id), ActorRef.noSender());
+        if (inc == null) {
+            inc = new VirtualServiceIncrementation(id);
+        }
+        master.tell(inc, ActorRef.noSender());
     }
+
+    private RuntimeReportSelector rrs;
 
     @Override
     public int getServiceUsageCount(int id) {
-        master.tell(new RuntimeReportSelector(id), ActorRef.noSender());
+        if (rrs == null) {
+            rrs = new RuntimeReportSelector(id);
+        }
+        master.tell(rrs, ActorRef.noSender());
         return 0;
     }
 
