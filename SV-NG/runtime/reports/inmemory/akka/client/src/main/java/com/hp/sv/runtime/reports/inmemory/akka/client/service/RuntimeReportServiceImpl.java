@@ -15,8 +15,8 @@ public class RuntimeReportServiceImpl implements RuntimeReportsService {
     private ConcurrentMap<Integer, AtomicInteger> map = new ConcurrentHashMap<Integer, AtomicInteger>();
 
     public void registerService(int id) {
-        if(logger.isDebugEnabled()) {
-            logger.debug(String.format("Registering virtual service [%d].", id));
+        if(logger.isInfoEnabled()) {
+            logger.info(String.format("Registering virtual service [%d].", id));
         }
 
         Validate.isTrue(id > 0);
@@ -46,8 +46,8 @@ public class RuntimeReportServiceImpl implements RuntimeReportsService {
     public void unregisterService(int id) {
         Validate.notNull(map.remove(id), "Service [Id=%d] is not registered.", id);
 
-        if(logger.isDebugEnabled()) {
-            logger.debug(String.format("Unregistering virtual service [%d].", id));
+        if(logger.isInfoEnabled()) {
+            logger.info(String.format("Unregistering virtual service [%d].", id));
         }
     }
 }
