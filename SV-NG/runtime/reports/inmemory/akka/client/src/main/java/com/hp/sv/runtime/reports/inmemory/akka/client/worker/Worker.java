@@ -3,6 +3,7 @@ package com.hp.sv.runtime.reports.inmemory.akka.client.worker;
 import akka.actor.UntypedActor;
 import com.hp.sv.runtime.reports.api.RuntimeReportsService;
 import com.hp.sv.runtime.reports.inmemory.akka.client.model.*;
+import org.apache.commons.lang3.Validate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +20,12 @@ public class Worker extends UntypedActor {
         if(logger.isDebugEnabled()) {
             logger.debug(String.format("Message received: %s", message));
         }
+        Validate.notNull(runtimeReportsService);
 
         if (message instanceof VirtualServiceRegistration) {
             runtimeReportsService.registerService(((VirtualServiceRegistration) message).getVirtualServiceId());
         } else if (message instanceof VirtualServiceIncrementation) {
-            runtimeReportsService.increaseServiceUsageCount(((VirtualServiceUnregistration) message).getVirtualServiceId());
+            runtimeReportsService.increaseServiceUsageCount(((VirtualServiceIncrementation) message).getVirtualServiceId());
         } else if (message instanceof VirtualServiceUnregistration) {
             runtimeReportsService.unregisterService(((VirtualServiceUnregistration) message).getVirtualServiceId());
         } else if (message instanceof RuntimeReportSelector) {

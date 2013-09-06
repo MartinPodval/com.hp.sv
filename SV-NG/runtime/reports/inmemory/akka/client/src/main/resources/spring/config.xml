@@ -4,14 +4,11 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
     <bean name="runtimeReportClient" id="runtimeReportClient"
-          class="com.hp.sv.runtime.reports.inmemory.rest.client.RuntimeReportsClient" autowire="constructor">
-        <constructor-arg name="serverUri" value="${server.url}"/>
-        <constructor-arg name="serverPort" value="${server.port}"/>
-    </bean>
+          class="com.hp.sv.runtime.reports.inmemory.akka.client.client.RuntimeReportsClient" />
 
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations">
-            <value>classpath:com/hp/sv/runtime/reports/inemory/rest/client/client.properties</value>
+            <value>classpath:com/hp/sv/runtime/reports/inemory/akka/client/client.properties</value>
         </property>
         <property name="searchSystemEnvironment" value="true"></property>
         <property name="systemPropertiesMode">
@@ -21,5 +18,7 @@
     </bean>
 
     <bean class="com.hp.sv.runtime.reports.inmemory.akka.client.service.RuntimeReportServiceImpl" />
+    <bean id="akkaRuntimeReportClient" class="com.hp.sv.runtime.reports.inmemory.akka.client.client.RuntimeReportsClient" />
+    <bean class="com.hp.sv.runtime.reports.inmemory.akka.client.worker.Worker" scope="prototype" />
 
 </beans>

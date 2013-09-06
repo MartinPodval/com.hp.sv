@@ -1,7 +1,6 @@
 package com.hp.sv.simulator.simple.test.integration.simulator;
 
 import com.hp.sv.runtime.reports.api.RuntimeReportsClient;
-import com.hp.sv.runtime.reports.inmemory.rest.service.RuntimeReportRestfulServiceImpl;
 import com.hp.sv.simulator.api.simulator.Simulator;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.spring.SpringLifecycleListener;
@@ -35,7 +34,7 @@ public class SimulatorImplTestWithJersey extends JerseyTest {
                 .register(SpringLifecycleListener.class)
                 .register(RequestContextFilter.class);
         rc.property("contextConfigLocation", "classpath*:/spring/config.xml");
-        rc.register(RuntimeReportRestfulServiceImpl.class);
+//        rc.register(RuntimeReportRestfulServiceImpl.class);
         return rc;
     }
 
