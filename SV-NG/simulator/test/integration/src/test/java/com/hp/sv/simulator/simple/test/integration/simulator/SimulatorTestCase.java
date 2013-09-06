@@ -53,12 +53,20 @@ public class SimulatorTestCase implements AutoCloseable {
 
         ExecutorService exec = Executors.newSingleThreadExecutor();
         final Future<Object> future = exec.submit(new Callable<Object>() {
+
+            private int last = 0;
+
             @Override
             public Object call() throws Exception {
-                while (runtimeReportsClient.getServiceUsageCount(virtualServiceId) != countPerThread * threadsCount) {
+                final int current = runtimeReportsClient.getServiceUsageCount(virtualServiceId);
+                while ((current != countPerThread * threadsCount) && (current != last)) {
                     Thread.sleep(100);
+                    if(logger.isInfoEnabled()) {
+                        logger.info("Current count is " + current);
+                    }
+                    last = current;
                 }
-                return runtimeReportsClient.getServiceUsageCount(virtualServiceId);
+                return current;
             }
         });
         final int result = (int) future.get(100, TimeUnit.SECONDS);

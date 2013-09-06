@@ -71,7 +71,6 @@ public class RuntimeReportsClient implements com.hp.sv.runtime.reports.api.Runti
         if (rrs == null) {
             rrs = new RuntimeReportSelector(id);
         }
-        logger.info("Asking for count ...");
         final Timeout timeout = new Timeout(Duration.create(5, TimeUnit.SECONDS));
         Future<Object> f = Patterns.ask(master, rrs, timeout);
 
