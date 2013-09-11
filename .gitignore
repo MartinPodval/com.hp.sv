@@ -1,4 +1,4 @@
-aa*.iml
+*.iml
 *.ipr
 *.iws
 target/
