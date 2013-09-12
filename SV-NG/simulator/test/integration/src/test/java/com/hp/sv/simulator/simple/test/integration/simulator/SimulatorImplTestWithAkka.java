@@ -44,7 +44,7 @@ public class SimulatorImplTestWithAkka {
         }
     }
 
-    @Test
+//    @Test
     public void getResponse_returns_response() throws Exception {
         try (final SimulatorTestCase testCase = new SimulatorTestCase(runtimeReportsClient, simulator, virtualServiceId)) {
             Thread.sleep(100);

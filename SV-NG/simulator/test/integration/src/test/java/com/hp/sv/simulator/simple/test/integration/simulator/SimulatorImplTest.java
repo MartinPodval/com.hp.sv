@@ -62,7 +62,7 @@ public class SimulatorImplTest {
         }
     }
 
-    @Test
+//    @Test
     public void getResponse_returns_response() throws Exception {
         try(final SimulatorTestCase testCase = new SimulatorTestCase(runtimeReportsClient, simulator, virtualServiceId)) {
             testCase.execute(threadsCount, countPerThread);
