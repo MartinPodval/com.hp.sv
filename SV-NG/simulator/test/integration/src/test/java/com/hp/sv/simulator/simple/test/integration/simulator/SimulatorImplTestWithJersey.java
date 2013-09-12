@@ -41,8 +41,8 @@ public class SimulatorImplTestWithJersey extends JerseyTest {
 
     @Test
     public void getResponse_returns_response() throws Exception {
-        final int countPerThread = 5000;
-        final int threadsCount = 10;
+        final int countPerThread = 500;
+        final int threadsCount = 1;
 
         try (final SimulatorTestCase testCase = new SimulatorTestCase(runtimeReportsClient, simulator, virtualServiceId)) {
             testCase.execute(threadsCount, countPerThread);

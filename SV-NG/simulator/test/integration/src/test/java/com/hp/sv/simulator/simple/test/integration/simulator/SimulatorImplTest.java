@@ -34,8 +34,8 @@ import static org.junit.Assert.fail;
  * org.junit.runner.JUnitCore com.hp.sv.simulator.simple.test.integration.simulator.SimulatorImplTest
  * * </code>
  */
-@ContextConfiguration(locations = {"classpath*:/spring/config.xml"})
-@RunWith(SpringJUnit4ClassRunner.class)
+//@ContextConfiguration(locations = {"classpath*:/spring/config.xml"})
+//@RunWith(SpringJUnit4ClassRunner.class)
 public class SimulatorImplTest {
 
     @Autowired
