@@ -19,7 +19,7 @@ import static org.junit.Assert.fail;
 /**
  * How to run this test as parametrized mvn task?
  * <code>
- * mvn integration-test -Dtest=SimulatorImplTest -DargLine="-Dserver.port=12345"
+ * mvn "-Dserver.url=http://localhost" "-Dserver.port=7200" integration-test -Dtest=SimulatorImplTest
  * </code>
  * <p/>
  * or
