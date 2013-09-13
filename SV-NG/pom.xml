@@ -15,6 +15,7 @@
         <module>runtime/reports/inmemory/rest/client</module>
         <module>runtime/reports/inmemory/rest/service</module>
         <module>runtime/reports/inmemory/akka/client</module>
+        <module>management/client/old</module>
     </modules>
 
     <build>
