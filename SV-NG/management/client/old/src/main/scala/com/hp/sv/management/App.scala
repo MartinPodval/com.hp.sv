@@ -52,24 +52,23 @@ object App {
     log.info(String.format("Found virtual service ids: %s", virtualServiceIds.mkString(", ")));
 
     virtualServiceIds.foreach(vsId => {
-      managed(new FileOutputStream(new File(String.format(virtualServiceFileExtensionPattern, outputDirectory, vsId)))) acquireAndGet {
-        o => {
-          for (m <- XML.load(new ForkerStream(getConnection(String.format(serviceUrl, url, vsId)).getInputStream, o)) \\ virtualServiceElementName \\ "_") {
+      managed(new ForkerStream(getConnection(String.format(serviceUrl, url, vsId)), String.format(virtualServiceFileExtensionPattern, outputDirectory, vsId))) acquireAndGet {
+        vsO => {
+          for (m <- XML.load(vsO) \\ virtualServiceElementName \\ "_") {
             val refId = m.attribute(refAttribute)
             m.label match {
               case `performanceModelElementName` =>
-                save(getConnection(String.format(performanceModelUrl, url, vsId, refId.get(0).text)), new File(String.format(performanceModelFileExtensionPattern, outputDirectory, refId.get(0).text)))
+                save(getConnection(String.format(performanceModelUrl, url, vsId, refId.get(0).text)), String.format(performanceModelFileExtensionPattern, outputDirectory, refId.get(0).text))
               case `dataModelElementName` =>
-                managed(new FileOutputStream(new File(String.format(dataModelFileExtensionPattern, outputDirectory, refId.get(0).text)))) acquireAndGet {
+                managed(new ForkerStream(getConnection(String.format(dataModelUrl, url, vsId, refId.get(0).text)), String.format(dataModelFileExtensionPattern, outputDirectory, refId.get(0).text))) acquireAndGet {
                   dmO => {
-                    for (dm <- XML.load(new ForkerStream(getConnection(String.format(dataModelUrl, url, vsId, refId.get(0).text)).getInputStream, dmO))
-                      \\ dataModelElementName \\ "serviceOperationRules" \\ "serviceOperationRule" \\ "datasetIds" \\ "datasetId") {
-                      save(getConnection(String.format(datasetUrl, url, vsId, refId.get(0).text, dm.text)), new File(String.format(datasetFileExtensionPattern, outputDirectory, dm.text)))
+                    for (dm <- XML.load(dmO) \\ dataModelElementName \\ "serviceOperationRules" \\ "serviceOperationRule" \\ "datasetIds" \\ "datasetId") {
+                      save(getConnection(String.format(datasetUrl, url, vsId, refId.get(0).text, dm.text)), String.format(datasetFileExtensionPattern, outputDirectory, dm.text))
                     }
                   }
                 }
               case `serviceDescriptionElementName` =>
-                save(getConnection(String.format(serviceDescriptionUrl, url, vsId, refId.get(0).text)), new File(String.format(serviceDescriptionFileExtensionPattern, outputDirectory, refId.get(0).text)))
+                save(getConnection(String.format(serviceDescriptionUrl, url, vsId, refId.get(0).text)), String.format(serviceDescriptionFileExtensionPattern, outputDirectory, refId.get(0).text))
               case _ =>
             }
           }
@@ -84,20 +83,34 @@ object App {
     c
   }
 
-  def save(url: URLConnection, outputFile: File) {
-    log.info(String.format("Writing url content [%s] output to file [%s].", url, outputFile))
-    for (i <- managed(url.getInputStream); o <- managed(new FileOutputStream(outputFile))) {
-      Iterator.continually(i.read()).takeWhile(-1 !=).foreach(o.write)
+  def save(url: URLConnection, file: String) {
+    log.info(String.format("Writing url content [%s] output to file [%s].", url, file))
+    var x: Int = 0
+    managed(new ForkerStream(url, file)) acquireAndGet {
+      f =>
+        Iterator.continually(f.read()).takeWhile(-1 !=).foreach(ch => x += ch.toInt)
     }
+    log.info(x)
   }
 }
 
-class ForkerStream(val i: InputStream, o: OutputStream) extends InputStream {
+class ForkerStream(val url: URLConnection, file: String) extends InputStream {
+  private val log: Log = LogFactory.getLog(classOf[ForkerStream])
+
+  log.info(String.format("Writing url content [%s] output to file [%s].", url, file))
+  val i = url.getInputStream
+  val o = new FileOutputStream(file)
+
   def read(): Int = {
     val v: Int = i.read()
     if (v > -1) {
       o.write(v)
     }
     v
+  }
+
+  override def close() {
+    o.close()
+    super.close()
   }
 }
