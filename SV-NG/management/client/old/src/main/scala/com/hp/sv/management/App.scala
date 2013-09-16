@@ -18,14 +18,24 @@ object App {
 
   val servicesUrl: String = "/services"
   val serviceUrl: String = "%s" + servicesUrl + "/%s?alt=xml"
-  val virtualServiceFileExtensionPattern: String = "service-%s.vs"
+  val virtualServiceFileExtensionPattern: String = "%s/service-%s.vs"
 
-  val performanceModelFileExtensionPattern: String = "performance-model-%s.vspfmodel"
+  val performanceModelFileExtensionPattern: String = "%s/performance-model-%s.vspfmodel"
   val performanceModelElementName: String = "performanceModel"
   val performanceModelUrl: String = "%s" + servicesUrl + "/%s/" + performanceModelElementName + "/%s"
 
-  val virtualServiceElementName: String = "virtualService"
+  val serviceDescriptionFileExtensionPattern: String = "%s/service-descripton-%s.vsdsc"
+  val serviceDescriptionElementName: String = "serviceDescription"
+  val serviceDescriptionUrl: String = "%s" + servicesUrl + "/%s/serviceDescriptions/%s"
+
+  val dataModelFileExtensionPattern: String = "%s/datamodel-%s.vsmodel"
   val dataModelElementName: String = "dataModel"
+  val dataModelUrl: String = "%s" + servicesUrl + "/%s/" + dataModelElementName + "/%s?alt=xml"
+
+  val datasetFileExtensionPattern: String = "%s/dataset-%s.vsdataset"
+  val datasetUrl: String = "%s" + servicesUrl + "/%s/" + dataModelElementName + "/%s/dataset/%s?alt=xml"
+
+  val virtualServiceElementName: String = "virtualService"
 
   val refAttribute: String = "ref"
   val feedElementName: String = "feed"
@@ -42,15 +52,24 @@ object App {
     log.info(String.format("Found virtual service ids: %s", virtualServiceIds.mkString(", ")));
 
     virtualServiceIds.foreach(vsId => {
-      managed(new FileOutputStream(new File(outputDirectory, String.format(virtualServiceFileExtensionPattern, vsId)))) acquireAndGet {
+      managed(new FileOutputStream(new File(String.format(virtualServiceFileExtensionPattern, outputDirectory, vsId)))) acquireAndGet {
         o => {
           for (m <- XML.load(new ForkerStream(getConnection(String.format(serviceUrl, url, vsId)).getInputStream, o)) \\ virtualServiceElementName \\ "_") {
             val refId = m.attribute(refAttribute)
             m.label match {
               case `performanceModelElementName` =>
-                save(getConnection(String.format(performanceModelUrl, url, vsId, refId.get(0).text)), new File(outputDirectory, String.format(performanceModelFileExtensionPattern, refId.get(0).text)))
+                save(getConnection(String.format(performanceModelUrl, url, vsId, refId.get(0).text)), new File(String.format(performanceModelFileExtensionPattern, outputDirectory, refId.get(0).text)))
               case `dataModelElementName` =>
-
+                managed(new FileOutputStream(new File(String.format(dataModelFileExtensionPattern, outputDirectory, refId.get(0).text)))) acquireAndGet {
+                  dmO => {
+                    for (dm <- XML.load(new ForkerStream(getConnection(String.format(dataModelUrl, url, vsId, refId.get(0).text)).getInputStream, dmO))
+                      \\ dataModelElementName \\ "serviceOperationRules" \\ "serviceOperationRule" \\ "datasetIds" \\ "datasetId") {
+                      save(getConnection(String.format(datasetUrl, url, vsId, refId.get(0).text, dm.text)), new File(String.format(datasetFileExtensionPattern, outputDirectory, dm.text)))
+                    }
+                  }
+                }
+              case `serviceDescriptionElementName` =>
+                save(getConnection(String.format(serviceDescriptionUrl, url, vsId, refId.get(0).text)), new File(String.format(serviceDescriptionFileExtensionPattern, outputDirectory, refId.get(0).text)))
               case _ =>
             }
           }
