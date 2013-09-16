@@ -18,20 +18,19 @@ object App {
 
   val servicesUrl: String = "/services"
   val serviceUrl: String = "%s" + servicesUrl + "/%s?alt=xml"
-  val performanceModelUrl: String = "%s" + servicesUrl + "/%s/" + performanceModelElementName + "/%s"
-
   val virtualServiceFileExtensionPattern: String = "service-%s.vs"
+
   val performanceModelFileExtensionPattern: String = "performance-model-%s.vspfmodel"
+  val performanceModelElementName: String = "performanceModel"
+  val performanceModelUrl: String = "%s" + servicesUrl + "/%s/" + performanceModelElementName + "/%s"
 
   val virtualServiceElementName: String = "virtualService"
   val dataModelElementName: String = "dataModel"
-  val performanceModelElementName: String = "performanceModel"
 
   val refAttribute: String = "ref"
   val feedElementName: String = "feed"
   val entryElementName: String = "entry"
   val idUrl: String = "id"
-
 
   def main(args: Array[String]) {
     Validate.notEmpty(args);
@@ -43,18 +42,21 @@ object App {
     log.info(String.format("Found virtual service ids: %s", virtualServiceIds.mkString(", ")));
 
     virtualServiceIds.foreach(vsId => {
-      for (i <- managed(getConnection(String.format(serviceUrl, url, vsId)).getInputStream); o <- managed(new FileOutputStream(new File(outputDirectory, String.format(virtualServiceFileExtensionPattern, vsId))))) {
-        for (m <- XML.load(new ForkerStream(i, o)) \\ virtualServiceElementName \\ "_") {
-          m.label match {
-            case `performanceModelElementName` =>
-              val pmId: String = m.attribute(refAttribute).get(0).text
-              save(getConnection(String.format(serviceUrl, url, vsId, pmId)), new File(outputDirectory, String.format(performanceModelFileExtensionPattern, pmId)))
-            case _ =>
+      managed(new FileOutputStream(new File(outputDirectory, String.format(virtualServiceFileExtensionPattern, vsId)))) acquireAndGet {
+        o => {
+          for (m <- XML.load(new ForkerStream(getConnection(String.format(serviceUrl, url, vsId)).getInputStream, o)) \\ virtualServiceElementName \\ "_") {
+            val refId = m.attribute(refAttribute)
+            m.label match {
+              case `performanceModelElementName` =>
+                save(getConnection(String.format(performanceModelUrl, url, vsId, refId.get(0).text)), new File(outputDirectory, String.format(performanceModelFileExtensionPattern, refId.get(0).text)))
+              case `dataModelElementName` =>
+
+              case _ =>
+            }
           }
         }
       }
     })
-
   }
 
   def getConnection(url: String): URLConnection = {
