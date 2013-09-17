@@ -5,11 +5,11 @@ import scala.io
 import org.apache.commons.lang3.Validate
 import org.apache.commons.logging.{Log, LogFactory}
 import scala.xml.{Node, XML}
-import scala.collection.immutable.Seq
 import java.io._
 import java.net.{URLConnection, URL}
 import resource._
 import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable
 
 object App {
   private val log: Log = LogFactory.getLog(classOf[App])
@@ -49,19 +49,21 @@ object App {
 
     log.info(String.format("Url: %s", url));
 
-    val virtualServiceIds: Seq[String] = (XML.load(io.Source.fromURL(url + servicesUrl).reader()) \\ feedElementName \\ entryElementName \\ idUrl).map(_.text)
+    val virtualServiceIds: Iterable[String] = (XML.load(io.Source.fromURL(url + servicesUrl).reader()) \\ feedElementName \\ entryElementName \\ idUrl).map(_.text)
     log.info(String.format("Found virtual service ids: %s", virtualServiceIds.mkString(", ")));
 
     val dataModelElements: ArrayBuffer[(String, String)] = new ArrayBuffer[(String, String)]()
     val performanceModelElements: ArrayBuffer[(String, String)] = new ArrayBuffer[(String, String)]()
     val sdElements: ArrayBuffer[(String, String)] = new ArrayBuffer[(String, String)]()
 
+    def addVsAndValue(b: mutable.Buffer[(String, String)], vsId: String, element: Node) = b += new Tuple2[String, String](vsId, element.attribute(refAttribute).get(0).text)
+
     virtualServiceIds.foreach(vsId => saveAndProcess(
       String.format(serviceUrl, url, vsId), String.format(virtualServiceFileExtensionPattern, outputDirectory, vsId), (fs: InputStream) => {
         for (m <- XML.load(fs) \\ virtualServiceElementName \\ "_") m.label match {
-          case `dataModelElementName` => dataModelElements += new Tuple2[String, String](vsId, m.attribute(refAttribute).get(0).text)
-          case `performanceModelElementName` => performanceModelElements += new Tuple2[String, String](vsId, m.attribute(refAttribute).get(0).text)
-          case `serviceDescriptionElementName` => sdElements += new Tuple2[String, String](vsId, m.attribute(refAttribute).get(0).text)
+          case `dataModelElementName` => addVsAndValue(dataModelElements, vsId, m)
+          case `performanceModelElementName` => addVsAndValue(performanceModelElements, vsId, m)
+          case `serviceDescriptionElementName` => addVsAndValue(sdElements, vsId, m)
           case _ =>
         }
       }
