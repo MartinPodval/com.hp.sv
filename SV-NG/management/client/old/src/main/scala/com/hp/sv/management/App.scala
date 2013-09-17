@@ -4,11 +4,12 @@ package com.hp.sv.management
 import scala.io
 import org.apache.commons.lang3.Validate
 import org.apache.commons.logging.{Log, LogFactory}
-import scala.xml.XML
+import scala.xml.{Node, XML}
 import scala.collection.immutable.Seq
 import java.io._
 import java.net.{URLConnection, URL}
 import resource._
+import scala.collection.mutable.ArrayBuffer
 
 object App {
   private val log: Log = LogFactory.getLog(classOf[App])
@@ -51,54 +52,52 @@ object App {
     val virtualServiceIds: Seq[String] = (XML.load(io.Source.fromURL(url + servicesUrl).reader()) \\ feedElementName \\ entryElementName \\ idUrl).map(_.text)
     log.info(String.format("Found virtual service ids: %s", virtualServiceIds.mkString(", ")));
 
-    virtualServiceIds.foreach(vsId => {
-      managed(new ForkerStream(getConnection(String.format(serviceUrl, url, vsId)), String.format(virtualServiceFileExtensionPattern, outputDirectory, vsId))) acquireAndGet {
-        vsO => {
-          for (m <- XML.load(vsO) \\ virtualServiceElementName \\ "_") {
-            val refId = m.attribute(refAttribute)
-            m.label match {
-              case `performanceModelElementName` =>
-                save(getConnection(String.format(performanceModelUrl, url, vsId, refId.get(0).text)), String.format(performanceModelFileExtensionPattern, outputDirectory, refId.get(0).text))
-              case `dataModelElementName` =>
-                managed(new ForkerStream(getConnection(String.format(dataModelUrl, url, vsId, refId.get(0).text)), String.format(dataModelFileExtensionPattern, outputDirectory, refId.get(0).text))) acquireAndGet {
-                  dmO => {
-                    for (dm <- XML.load(dmO) \\ dataModelElementName \\ "serviceOperationRules" \\ "serviceOperationRule" \\ "datasetIds" \\ "datasetId") {
-                      save(getConnection(String.format(datasetUrl, url, vsId, refId.get(0).text, dm.text)), String.format(datasetFileExtensionPattern, outputDirectory, dm.text))
-                    }
-                  }
-                }
-              case `serviceDescriptionElementName` =>
-                save(getConnection(String.format(serviceDescriptionUrl, url, vsId, refId.get(0).text)), String.format(serviceDescriptionFileExtensionPattern, outputDirectory, refId.get(0).text))
-              case _ =>
-            }
-          }
+    val dataModelElements: ArrayBuffer[(String, String)] = new ArrayBuffer[(String, String)]()
+    val performanceModelElements: ArrayBuffer[(String, String)] = new ArrayBuffer[(String, String)]()
+    val sdElements: ArrayBuffer[(String, String)] = new ArrayBuffer[(String, String)]()
+
+    virtualServiceIds.foreach(vsId => saveAndProcess(
+      String.format(serviceUrl, url, vsId), String.format(virtualServiceFileExtensionPattern, outputDirectory, vsId), (fs: InputStream) => {
+        for (m <- XML.load(fs) \\ virtualServiceElementName \\ "_") m.label match {
+          case `dataModelElementName` => dataModelElements += new Tuple2[String, String](vsId, m.attribute(refAttribute).get(0).text)
+          case `performanceModelElementName` => performanceModelElements += new Tuple2[String, String](vsId, m.attribute(refAttribute).get(0).text)
+          case `serviceDescriptionElementName` => sdElements += new Tuple2[String, String](vsId, m.attribute(refAttribute).get(0).text)
+          case _ =>
         }
       }
-    })
+    ))
+
+    sdElements.foreach(e => saveAndProcess(String.format(serviceDescriptionUrl, url, e._1, e._2),
+      String.format(serviceDescriptionFileExtensionPattern, outputDirectory, e._2), processAll))
+
+    performanceModelElements.foreach(e => saveAndProcess(String.format(performanceModelUrl, url, e._1, e._2),
+      String.format(performanceModelFileExtensionPattern, outputDirectory, e._2), processAll))
+
+    val datasetIds: ArrayBuffer[(String, String, String)] = ArrayBuffer[(String, String, String)]()
+    dataModelElements.map(e => saveAndProcess(String.format(dataModelUrl, url, e._1, e._2), String.format(dataModelFileExtensionPattern, outputDirectory, e._2),
+      (fs: InputStream) => {
+        (XML.load(fs) \\ dataModelElementName \\ "serviceOperationRules" \\ "serviceOperationRule" \\ "datasetIds" \\ "datasetId").
+          foreach(dId => datasetIds += new Tuple3[String, String, String](e._1, e._2, dId.text))
+      }))
+
+    datasetIds.foreach(e => saveAndProcess(String.format(datasetUrl, url, e._1, e._2, e._3),
+      String.format(datasetFileExtensionPattern, outputDirectory, e._3), processAll))
   }
 
-  def getConnection(url: String): URLConnection = {
-    val c: URLConnection = new URL(url).openConnection()
-    c.setRequestProperty("Accept", "application/xml")
-    c
-  }
-
-  def save(url: URLConnection, file: String) {
-    log.info(String.format("Writing url content [%s] output to file [%s].", url, file))
-    var x: Int = 0
+  def saveAndProcess(url: String, file: String, process: InputStream => Unit) = {
     managed(new ForkerStream(url, file)) acquireAndGet {
-      f =>
-        Iterator.continually(f.read()).takeWhile(-1 !=).foreach(ch => x += ch.toInt)
+      fs => process(fs)
     }
-    log.info(x)
   }
+
+  def processAll(i: InputStream) = Iterator.continually(i.read).takeWhile(-1 !=).foreach(ch => ch)
 }
 
-class ForkerStream(val url: URLConnection, file: String) extends InputStream {
+class ForkerStream(val url: String, file: String) extends InputStream {
   private val log: Log = LogFactory.getLog(classOf[ForkerStream])
 
   log.info(String.format("Writing url content [%s] output to file [%s].", url, file))
-  val i = url.getInputStream
+  val i = getConnection(url).getInputStream
   val o = new FileOutputStream(file)
 
   def read(): Int = {
@@ -107,6 +106,12 @@ class ForkerStream(val url: URLConnection, file: String) extends InputStream {
       o.write(v)
     }
     v
+  }
+
+  private def getConnection(url: String): URLConnection = {
+    val c: URLConnection = new URL(url).openConnection()
+    c.setRequestProperty("Accept", "application/xml")
+    c
   }
 
   override def close() {
